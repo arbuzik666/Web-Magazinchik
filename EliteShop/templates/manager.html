@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Панель менеджера{% endblock %}
+
+{% block content %}
+<h2></h2>
+<div class="content-block">
+
+    <h2>Панель управления</h2>
+
+    <div class="manager-sections">
+        <section class="sales-report">
+            <h3>Отчет о продажах</h3>
+            <div class="chart">
+                <img src="data:image/png;base64,{{ plot_url }}" alt="График продаж">
+            </div>
+        </section>
+
+        <section class="products">
+            <h3>Товары <a href="{{ url_for('add_product') }}" class="btn-small">Добавить товар</a></h3>
+            <div class="table-wrapper">
+            <table class="products-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Изображение</th>
+                        <th>Название</th>
+                        <th>Цена</th>
+                        <th>Остаток</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>{{ product.id }}</td>
+                        <td>
+                            <img src="{{ url_for('static', filename='img/' + product.image) if product.image else 'https://via.placeholder.com/50' }}" alt="{{ product.name }}" width="50">
+                        </td>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.price }} руб.</td>
+                        <td>{{ product.stock }} шт.</td>
+                        <td>
+                            <a href="{{ url_for('delete_product', product_id=product.id) }}" class="btn-small" onclick="return confirm('Удалить этот товар?')">Удалить</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </section>
+
+        <section class="orders">
+            <h3>Последние заказы</h3>
+            <div class="table-wrapper">
+            <table class="orders-table">
+        <thead>
+            <tr>
+                <th>№ заказа</th>
+                <th>Пользователь (ID/Имя)</th>
+                <th>Дата</th>
+                <th>Сумма</th>
+                <th>Адрес</th>
+                <th>Товары</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.Order.id }}</td>
+                <td>
+                    ID: {{ order.User.id }}<br>
+                    {{ order.User.username }}
+                </td>
+                <td>{{ order.Order.date }}</td>
+                <td>{{ order.Order.total }} руб.</td>
+                <td>{{ order.Order.address }}</td>
+                <td>
+                    <ul>
+                        {% for item in order.Order.items %}
+                        <li>{{ item.product.name }} - {{ item.quantity }} шт.</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <a href="{{ url_for('delete_order', order_id=order.Order.id) }}" 
+                    class="btn-small" 
+                    onclick="return confirm('Удалить этот заказ?')">
+                        Удалить
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

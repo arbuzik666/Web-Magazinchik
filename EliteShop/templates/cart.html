@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<h2></h2>
+<div class="content-block">
+    <h2>Ваша корзина</h2>
+
+    {% if cart_items %}
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Цена</th>
+                <th>Количество</th>
+                <th>Сумма</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>
+                    <div class="cart-item">
+                        <img src="{{ url_for('static', filename='img/' + item.product.image) if item.product.image else 'https://via.placeholder.com/100' }}" alt="{{ item.product.name }}">
+                        <span>{{ item.product.name }}</span>
+                    </div>
+                </td>
+                <td>{{ item.product.price }} руб.</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.product.price * item.quantity }} руб.</td>
+                <td>
+                    <a href="{{ url_for('remove_from_cart', item_id=item.id) }}" class="btn-small">Удалить</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"><strong>Итого:</strong></td>
+                <td colspan="2"><strong>{{ total }} руб.</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="coupon-form">
+        <h3>Применить купон</h3>
+        <form method="POST">
+            <input type="text" name="coupon" placeholder="Введите купон">
+            <button type="submit" class="btn-small">Применить</button>
+        </form>
+        <p>Доступные купоны: ELITE500 (500 руб.), ELITE1000 (1000 руб.)</p>
+    </div>
+
+    <div class="checkout-form">
+        <h3>Оформление заказа</h3>
+        <form method="POST">
+            <div class="form-group">
+                <label for="address">Адрес доставки:</label>
+                <input type="text" id="address" name="address" required value="{{ user.address if user.address else '' }}">
+            </div>
+            <div class="balance-info">
+                <p>Ваш баланс: {{ user.balance }} руб.</p>
+                <p>Сумма заказа: {{ total }} руб.</p>
+                {% if user.balance >= total %}
+                    <p>После оплаты останется: {{ user.balance - total }} руб.</p>
+                    <button type="submit" class="btn">Оформить заказ</button>
+                {% else %}
+                    <p class="error">Недостаточно средств на балансе!</p>
+                    <button type="submit" class="btn" disabled>Оформить заказ</button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <p>Ваша корзина пуста.</p>
+    <a href="{{ url_for('shop') }}" class="btn">Вернуться в магазин</a>
+    {% endif %}
+</div>
+{% endblock %}
