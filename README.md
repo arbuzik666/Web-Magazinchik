@@ -21,3 +21,7 @@ python app.py
 Аккаунт админа.
 Пользователь - admin
 Пароль - admin123
+
+5. API документация (Swagger UI): http://127.0.0.1:5000/docs
+
+
